@@ -17,6 +17,7 @@ public class Main {
         */
         //Forma para instanciar o DAO, não vamos chamar um new nesse caso chamamos a DaoFactory
         //Também é a forma de fazer uma injeção de dependencia sem explicitar a implementação
+        System.out.println("=== TESTE 1: seller findById ===");
         SellerDao sellerDao = DaoFactory.createSellerDao();
         Seller seller = sellerDao.findById(3);
 
