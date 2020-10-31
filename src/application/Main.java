@@ -8,6 +8,9 @@ import model.entities.Seller;
 import java.util.Date;
 import java.util.List;
 
+/*As repetições dos departamentos que aparecem na execução estão corretas
+  Estão de acordo com o diagrama e o que queremos exibir no resultado do programa */
+
 public class Main {
 
     public static void main(String[] args) {
@@ -26,6 +29,12 @@ public class Main {
         System.out.println("\n=== TESTE 2: seller findByDepartment ===");
         Department department = new Department(2, null);
         List<Seller> list = sellerDao.findByDepartment(department);
+        for (Seller obj: list) {
+            System.out.println(obj);
+        }
+
+        System.out.println("\n=== TESTE 3: seller findAll ===");
+        list = sellerDao.findAll();
         for (Seller obj: list) {
             System.out.println(obj);
         }
