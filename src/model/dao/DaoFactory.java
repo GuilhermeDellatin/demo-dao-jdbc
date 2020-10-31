@@ -1,5 +1,6 @@
 package model.dao;
 
+import db.DB;
 import model.dao.impl.SellerDaoJDBC;
 
 public class DaoFactory {
@@ -8,7 +9,7 @@ public class DaoFactory {
     //Mas internamente ela vai instanciar uma implementação
     //É um macete para não expor a implementação, deixar só a interface
     public static SellerDao createSellerDao(){
-        return new SellerDaoJDBC();
+        return new SellerDaoJDBC(DB.getConnection());
     }
 
 
