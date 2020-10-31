@@ -10,7 +10,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /*Observação: Nossa classe Dao é responsável por pegar os dados do banco e transformar em objetos associados.*/
@@ -68,6 +71,53 @@ public class SellerDaoJDBC implements SellerDao {
 
     }
 
+
+    @Override
+    public List<Seller> findAll() {
+        return null;
+    }
+
+    @Override
+    public List<Seller> findByDepartment(Department department) {
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+
+            statement = connection.prepareStatement("Select seller.* ,department.name as depname from seller inner join department\n"
+                    + "\ton seller.departmentid = department.id where department.id = ? order by name;");
+
+            statement.setInt(1, department.getId());
+            resultSet = statement.executeQuery();
+
+            List<Seller> listSeller = new ArrayList<>();
+            Map<Integer, Department> map = new HashMap<>();
+
+            while (resultSet.next()) {
+                //Para não repetir o departamento, sempre que passar no while eu vou verificar se o departmentid ja existe
+                //Se não existir ele retorna nulo..
+                Department dept = map.get(resultSet.getInt("departmentid"));
+                //Também posso reaproveitar a instanciação só chamando department em vez de declarar um novo Department dept..
+
+                if(dept == null){
+                     dept = instanciateDepartment(resultSet);
+                     //Estou salvando no map caso o departamento não exista...
+                     map.put(resultSet.getInt("departmentid"), dept);
+                }
+                Seller seller = instanciateSeller(resultSet, dept);
+                listSeller.add(seller);
+            }
+            return listSeller;
+
+        }catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(statement);
+            DB.closeResultSet(resultSet);
+        }
+    }
+
+
     private Seller instanciateSeller(ResultSet resultSet, Department department) throws SQLException{
         Seller seller = new Seller();
         seller.setId(resultSet.getInt("id"));
@@ -86,8 +136,4 @@ public class SellerDaoJDBC implements SellerDao {
         return department;
     }
 
-    @Override
-    public List<Seller> findAll() {
-        return null;
-    }
 }
