@@ -63,11 +63,49 @@ public class SellerDaoJDBC implements SellerDao {
 
     @Override
     public void update(Seller obj) {
+        PreparedStatement statement = null;
+
+        try{
+            statement = connection.prepareStatement("update seller set name=?, email=?, birthdate=?, basesalary=?, departmentId=? "
+                            +  "where id=?",
+                    Statement.RETURN_GENERATED_KEYS);
+
+
+            statement.setString(1, obj.getName());
+            statement.setString(2, obj.getEmail());
+            statement.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
+            statement.setDouble(4, obj.getBaseSalary());
+            statement.setInt(5, obj.getDepartment().getId());
+            statement.setInt(6, obj.getId());
+
+           statement.executeUpdate();
+
+        } catch (SQLException e){
+            throw new DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(statement);
+        }
 
     }
 
     @Override
     public void deleteById(Integer id) {
+         PreparedStatement statement = null;
+
+         try {
+             statement = connection.prepareStatement("delete from seller where id = ?");
+             statement.setInt(1, id);
+             int rowsAffected = statement.executeUpdate();
+
+             if (rowsAffected == 0){
+                 throw new DbException("Não existe funcionario com esse ID");
+             }
+
+         } catch (SQLException e) {
+             throw new DbException(e.getMessage());
+         } finally {
+             DB.closeStatement(statement);
+         }
 
     }
 
